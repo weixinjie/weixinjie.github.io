@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Jenkins采坑记 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="为什么要做自动化构建先说提测客户端发版之前总要经过测试部门的各种测试,像我厂的流程是  开发打测试包  将测试包上传自己的内测平台(如果你们没有自己的内测平台也可以使用免费的平台如：https://fir.im)  在测试的钉钉群组里通知测试部门或者发送邮件抄送测试部门 测试部门测试并反馈问题(可以自己的反馈平台也可以用BugTags) 开发人员修复问题并重复上述步骤">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jenkins采坑记">
+<meta property="og:url" content="http://weixinjie.github.io/2018/01/29/Jenkins采坑记/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="为什么要做自动化构建先说提测客户端发版之前总要经过测试部门的各种测试,像我厂的流程是  开发打测试包  将测试包上传自己的内测平台(如果你们没有自己的内测平台也可以使用免费的平台如：https://fir.im)  在测试的钉钉群组里通知测试部门或者发送邮件抄送测试部门 测试部门测试并反馈问题(可以自己的反馈平台也可以用BugTags) 开发人员修复问题并重复上述步骤">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/16072894fb30b41b?w=1440&h=1057&f=png&s=540266">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/160729018366b273?w=1280&h=738&f=jpeg&s=41332">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/160729127251bb0b?w=985&h=689&f=jpeg&s=67998">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/1607293804012eca?w=983&h=688&f=jpeg&s=70515">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/16072eedb980c520?w=1433&h=713&f=png&s=118233">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/160730c20bf6fe74?w=1125&h=168&f=png&s=20289">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/160731cd07118ea2?w=1092&h=794&f=png&s=95470">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/160731ec2f98c3cb?w=1099&h=188&f=png&s=31769">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/16073217930a2db7?w=1070&h=281&f=png&s=24279">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/160732205333e1d3?w=1107&h=285&f=png&s=25455">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/16073258b7687665?w=1110&h=858&f=png&s=170541">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/160732806fcd0d5c?w=950&h=433&f=png&s=43194">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/160732db6534f6f6?w=943&h=557&f=png&s=54236">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/1607338e643e5462?w=930&h=330&f=png&s=49707">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/1607332ef715faa1?w=944&h=261&f=png&s=25450">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/160733c9b24123be?w=934&h=146&f=png&s=14578">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/160733e997fcb594?w=958&h=914&f=png&s=127892">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/160733eb07a8a3a0?w=1014&h=907&f=png&s=70616">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/1607341b6069a112?w=1440&h=1057&f=png&s=455668">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/1607343f93d78cb5?w=1440&h=1057&f=png&s=413597">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/12/20/160734bd0bf61cd0?w=1048&h=624&f=png&s=126604">
+<meta property="og:updated_time" content="2018-01-29T13:43:50.987Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Jenkins采坑记">
+<meta name="twitter:description" content="为什么要做自动化构建先说提测客户端发版之前总要经过测试部门的各种测试,像我厂的流程是  开发打测试包  将测试包上传自己的内测平台(如果你们没有自己的内测平台也可以使用免费的平台如：https://fir.im)  在测试的钉钉群组里通知测试部门或者发送邮件抄送测试部门 测试部门测试并反馈问题(可以自己的反馈平台也可以用BugTags) 开发人员修复问题并重复上述步骤">
+<meta name="twitter:image" content="https://user-gold-cdn.xitu.io/2017/12/20/16072894fb30b41b?w=1440&h=1057&f=png&s=540266">
+  
+    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet" />
+  <script>
+      var yiliaConfig = {
+          rootUrl: '/',
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/head.jpg" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/" title="Hi Mate">weixinjie</a></h1>
+        </hgroup>
+
+        
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/Home">博客首页</a></li>
+                        
+                            <li><a href="/works">作品展示</a></li>
+                        
+                            <li><a href="/about">留言打卡</a></li>
+                        
+                            <li><a href="/FrontEndGuide">前端导航</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=PAkNDgsKBQ4MCnxNTRJfU1E" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/luuman" title="github">github</a>
+                            
+                                <a class="fl zhihu" target="_blank" href="#" title="zhihu">zhihu</a>
+                            
+                                <a class="fl weibo" target="_blank" href="#" title="weibo">weibo</a>
+                            
+                                <a class="fl google" target="_blank" href="#" title="google">google</a>
+                            
+                                <a class="fl twitter" target="_blank" href="#" title="twitter">twitter</a>
+                            
+                                <a class="fl linkedin" target="_blank" href="#" title="linkedin">linkedin</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://luuman.github.io/">name</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">纯海迷、爱运动、爱交友、爱旅行、喜欢接触新鲜事物、迎接新的挑战，更爱游离于错综复杂的编码与逻辑中</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="Me">weixinjie</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/head.jpg" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="Me">weixinjie</a></h1>
+            </hgroup>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/Home">博客首页</a></li>
+                
+                    <li><a href="/works">作品展示</a></li>
+                
+                    <li><a href="/about">留言打卡</a></li>
+                
+                    <li><a href="/FrontEndGuide">前端导航</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=PAkNDgsKBQ4MCnxNTRJfU1E" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/luuman" title="github">github</a>
+                    
+                        <a class="zhihu" target="_blank" href="#" title="zhihu">zhihu</a>
+                    
+                        <a class="weibo" target="_blank" href="#" title="weibo">weibo</a>
+                    
+                        <a class="google" target="_blank" href="#" title="google">google</a>
+                    
+                        <a class="twitter" target="_blank" href="#" title="twitter">twitter</a>
+                    
+                        <a class="linkedin" target="_blank" href="#" title="linkedin">linkedin</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-Jenkins采坑记" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/01/29/Jenkins采坑记/" class="article-date">
+      <time datetime="2018-01-29T13:32:19.000Z" itemprop="datePublished">2018-01-29</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Jenkins采坑记
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h1 id="为什么要做自动化构建"><a href="#为什么要做自动化构建" class="headerlink" title="为什么要做自动化构建"></a>为什么要做自动化构建</h1><h2 id="先说提测"><a href="#先说提测" class="headerlink" title="先说提测"></a>先说提测</h2><p>客户端发版之前总要经过测试部门的各种测试,像我厂的流程是</p>
+<ul>
+<li>开发打测试包 </li>
+<li>将测试包上传自己的内测平台(如果你们没有自己的内测平台也可以使用免费的平台如：<a href="https://fir.im" target="_blank" rel="noopener">https://fir.im</a>) </li>
+<li>在测试的钉钉群组里通知测试部门或者发送邮件抄送测试部门</li>
+<li>测试部门测试并反馈问题(可以自己的反馈平台也可以用BugTags)</li>
+<li>开发人员修复问题并重复上述步骤</li>
+</ul>
+<a id="more"></a>
+<p>然后问题就来了,每次提测需要抽一个同学来做这些事情，并且跑自动化测试的这些过程是没办法在研发人员技术内测的时候就能提供测试报告的。</p>
+<h2 id="再说发版"><a href="#再说发版" class="headerlink" title="再说发版"></a>再说发版</h2><p>我厂的渠道数量已经达到了100+，开发完新的业务需要全渠道发版的时候，还是需要单独抽一个同学出来跟进发版包，并且发版的流程更多。</p>
+<ul>
+<li>研发人员打渠道(100+)</li>
+<li>测试部门测试渠道包(各种验证:渠道号是不是正确等)</li>
+<li>研发人员将所有的渠道包上传内部文件存储服务器</li>
+<li>产品及商务部门从内部服务器拉去渠道，并完成发版</li>
+<li>发版邮件通知</li>
+</ul>
+<p>然后问题又来了:</p>
+<ul>
+<li>怎样保证这位同学机器上的打包环境是正常的？会不会他在开发过程中改了系统的环境造成未知的漏洞？</li>
+<li>打包出来的apk文件是不是需要测试部门彻底过一遍？测试部门的人手如果不够怎么办？</li>
+<li>最关键的一点:打包过程中，这名同学的机器基本不能用作开发，因为gradle会把内存跟cpu用的很干净。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本着繁重而重复的体力劳动交给机器做的原则，我们开始基于jenkins搞了一套自动化构建系统。这里我将构建过程中碰到的坑分享出来给大家，避免其他小伙伴重复入坑。</p>
+<h1 id="搭建Jenkins运行环境"><a href="#搭建Jenkins运行环境" class="headerlink" title="搭建Jenkins运行环境"></a>搭建Jenkins运行环境</h1><h2 id="下载并安装"><a href="#下载并安装" class="headerlink" title="下载并安装"></a>下载并安装</h2><ul>
+<li>点击<a href="https://jenkins.io/download/" target="_blank" rel="noopener">这里</a>进入官方的下载地址，由于我的内部服务器装的是windows系统所以我选择的是windows安装包。Linux Mac的安装方式大同小异。</li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2017/12/20/16072894fb30b41b?w=1440&amp;h=1057&amp;f=png&amp;s=540266" alt="下载"></p>
+<ul>
+<li>安装的方式有两种:  1.直接下载可安装文件,双击安装即可,安装完毕之后jenkins会自动打开浏览器并定位到8080端口 2.下载.war的包,然后下载tomcat容器,将该war包拷贝到tomcat容器中然后启动tomcat。(这里不多说了,google一波都出来了)</li>
+</ul>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><ul>
+<li>安装完jenkins后，打开浏览器<a href="http://localhost:8080,会弹出初始化界面" target="_blank" rel="noopener">http://localhost:8080,会弹出初始化界面</a></li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2017/12/20/160729018366b273?w=1280&amp;h=738&amp;f=jpeg&amp;s=41332" alt=""></p>
+<ul>
+<li><p>按照提示的文件目录将管理员密码输入(嗯，聪明的你一看就知道这图是我网上盗的)<br><img src="https://user-gold-cdn.xitu.io/2017/12/20/160729127251bb0b?w=985&amp;h=689&amp;f=jpeg&amp;s=67998" alt=""></p>
+</li>
+<li><p>然后重点来了,正常来说会进入如下界面进入插件安装环节<br><img src="https://user-gold-cdn.xitu.io/2017/12/20/1607293804012eca?w=983&amp;h=688&amp;f=jpeg&amp;s=70515" alt=""><br>如果有出现以下提示的同学，欢迎进入第一个坑<br>Offline<br>This Jenkins instance appears to be offline…(不啦不啦一堆),没错是因为你的服务器没翻q,需要自备梯子。(为了安全省事,备个梯子吧,大家都是搞开发的,没梯子怎么玩)。</p>
+</li>
+<li><p>安装 Gradle plugin,Git Parameter Plug-In,Email Extension Plugin以及Android Emulator Plugin插件</p>
+</li>
+<li>Jenkins会提示你创建一个用户,按照提示操作就好。</li>
+<li>喜大普奔,我们离自动化构建又近了一步,这时你会有如下的操作界面。忽略我已经创建好了的项目(打马赛克的地方)。<br><img src="https://user-gold-cdn.xitu.io/2017/12/20/16072eedb980c520?w=1433&amp;h=713&amp;f=png&amp;s=118233" alt=""></li>
+</ul>
+<h1 id="进行全局环境变量的配置"><a href="#进行全局环境变量的配置" class="headerlink" title="进行全局环境变量的配置"></a>进行全局环境变量的配置</h1><h2 id="系统设置"><a href="#系统设置" class="headerlink" title="系统设置"></a>系统设置</h2><p>打开系统管理-系统设置页面。这里我们重点设置一下邮箱，其他的可以使用默认的。</p>
+<ul>
+<li>Jenkins Location选项卡</li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2017/12/20/160730c20bf6fe74?w=1125&amp;h=168&amp;f=png&amp;s=20289" alt=""></p>
+<p>注意：系统管理员邮件地址一定要设置,以后Jenkins构建的邮箱通知会以这个邮箱地址为发件人发送</p>
+<ul>
+<li>Extended E-mail Notification选项卡。因为我们安装了Extended E-mail Notification插件所以需要设置一下这个选项卡的内容。注意因为我们用的是阿里云的企业邮箱，所以smtp走的是阿里云的。smtp这块需要根据你们的具体邮箱具体设置。</li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2017/12/20/160731cd07118ea2?w=1092&amp;h=794&amp;f=png&amp;s=95470" alt=""></p>
+<ul>
+<li>Android选项卡。这块需要设置一下Android SDK路径。我的SDK路径是我本机的，大家需要根据自己的具体路径具体设置。</li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2017/12/20/160731ec2f98c3cb?w=1099&amp;h=188&amp;f=png&amp;s=31769" alt=""></p>
+<ul>
+<li>完活，然后点击右下角的“保存”按钮。</li>
+</ul>
+<h2 id="系统工具配置"><a href="#系统工具配置" class="headerlink" title="系统工具配置"></a>系统工具配置</h2><ul>
+<li>JDK配置(老规矩，大家的具体路径需要具体设置)</li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2017/12/20/16073217930a2db7?w=1070&amp;h=281&amp;f=png&amp;s=24279" alt=""></p>
+<ul>
+<li>Git配置</li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2017/12/20/160732205333e1d3?w=1107&amp;h=285&amp;f=png&amp;s=25455" alt=""></p>
+<ul>
+<li>点击右下角的“保存”按钮</li>
+</ul>
+<h1 id="新建项目-开始自动化构建"><a href="#新建项目-开始自动化构建" class="headerlink" title="新建项目,开始自动化构建"></a>新建项目,开始自动化构建</h1><ul>
+<li>选择新建-构建一个自由风格的软件项目,选择确定,开始配置项目具体的设置</li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2017/12/20/16073258b7687665?w=1110&amp;h=858&amp;f=png&amp;s=170541" alt=""></p>
+<ul>
+<li>General配置</li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2017/12/20/160732806fcd0d5c?w=950&amp;h=433&amp;f=png&amp;s=43194" alt=""></p>
+<ul>
+<li>源码管理配置。注意我用的是一个测试项目，如果你是第一次配置建议用这个测试项目做一下打包。不要贸然直接拉线上代码。(因为坑很多…)。测试项目git地址:<a href="https://github.com/weixinjie/android-crop.git。Credentials选项如果没有授权的花需要点击Add新增一个。" target="_blank" rel="noopener">https://github.com/weixinjie/android-crop.git。Credentials选项如果没有授权的花需要点击Add新增一个。</a></li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2017/12/20/160732db6534f6f6?w=943&amp;h=557&amp;f=png&amp;s=54236" alt=""></p>
+<ul>
+<li>构建配置,这里需要点击增加构建步骤按钮，选择Invoke Gradle script选项</li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2017/12/20/1607338e643e5462?w=930&amp;h=330&amp;f=png&amp;s=49707" alt=""><br>注意，这里需要选择Use Gradle Wrapper选项,构建的时候Jenkins会自动去下载所需要的Gradle版本(保持科学上网状态)，尽量避免使用Invoke Gradle，里面坑很多。Tasks里面写:clean assembleRelease(不懂gradle语法的自己去学吧)这句话的意思是打所有渠道的release版本的apk。<br><img src="https://user-gold-cdn.xitu.io/2017/12/20/1607332ef715faa1?w=944&amp;h=261&amp;f=png&amp;s=25450" alt=""></p>
+<ul>
+<li>增加构建后的步骤<br>将打出来的apk文件保存一下，注意用于存档的文件就直接写<em>*/</em>.apk就行</li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2017/12/20/160733c9b24123be?w=934&amp;h=146&amp;f=png&amp;s=14578" alt=""></p>
+<p>配置邮件通知。新增Editable Email Notification的构建后步骤。图比较长，我截取了两张，需要配置的地方已经用红色标出</p>
+<p><img src="https://user-gold-cdn.xitu.io/2017/12/20/160733e997fcb594?w=958&amp;h=914&amp;f=png&amp;s=127892" alt=""><br><img src="https://user-gold-cdn.xitu.io/2017/12/20/160733eb07a8a3a0?w=1014&amp;h=907&amp;f=png&amp;s=70616" alt=""></p>
+<ul>
+<li>配置完成，喜大普奔，点击保存。</li>
+</ul>
+<h1 id="开始自动化构建"><a href="#开始自动化构建" class="headerlink" title="开始自动化构建"></a>开始自动化构建</h1><ul>
+<li><p>回到项目，点击立即构建,Jenkins会开始构建项目，并且在右下角的构建历史中新增一条构建历史<br><img src="https://user-gold-cdn.xitu.io/2017/12/20/1607341b6069a112?w=1440&amp;h=1057&amp;f=png&amp;s=455668" alt=""></p>
+</li>
+<li><p>点击某一条具体的构建历史，会出现该构建历史的详细内容，里面的Console Output选项卡可以查看构建的log</p>
+</li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2017/12/20/1607343f93d78cb5?w=1440&amp;h=1057&amp;f=png&amp;s=413597" alt=""></p>
+<ul>
+<li>构建完成之后，你配置的邮箱里面会收到构建通知.</li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2017/12/20/160734bd0bf61cd0?w=1048&amp;h=624&amp;f=png&amp;s=126604" alt=""></p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>本篇是写给初次接触jenkins的小伙伴的，也是自己采坑的一次记录。很多高级的用法没有体现出来，比如触发器、上传ftp服务器、跑Lint检测、跑monkey等都没有体现出来。希望大家从本篇教程做一个延伸，继续探寻强大的Jenkins。</p>
+<p><strong>打个广告 我本人非常愿意参加很多技术沙龙等线下活动,因为很多干货可以帮我快速成长;公司有时候也会组织我们去参加技术分享会,but很多时候大咖们演讲的速度会很快，导致会后能吸收的营养并不多。所以我在github上开了一个新的分支,里面存放着我参加技术分享的会后ppt(当然，很多技术分享讲师的ppt是不公开的，那我就没辙了哈)，大家可以fork一下，吸收一下里面的营养，一起进步哈。如果你也参加了很多技术分享，手里有很多会后ppt欢迎发到weixinjie1993@gmail.com我整理统一push上去，让更多人学习</strong><br><a href="https://github.com/weixinjie/ActivityPPT" target="_blank" rel="noopener">项目地址</a></p>
+
+      
+      
+        <div class="page-reward">
+          <p><a href="javascript:void(0)" onclick="dashangToggle()" class="dashang">赏</a></p>
+          <div class="hide_box"></div>
+          <div class="shang_box">
+            <a class="shang_close" href="javascript:void(0)" onclick="dashangToggle()">×</a>
+            <div class="shang_tit">
+              <p>纯属好玩</p>
+            </div>
+            <div class="shang_payimg">
+              <img src="/img/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+            </div>
+              <div class="pay_explain">扫码打赏，你说多少就多少</div>
+            <div class="shang_payselect">
+              
+                <div class="pay_item checked" data-id="alipay">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/alipay.png" alt="支付宝" /></span>
+                </div>
+              
+              
+                <div class="pay_item" data-id="wechat">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/weixin.png" alt="微信" /></span>
+                </div>
+              
+            </div>
+            <div class="shang_info">
+              <p>打开<span id="shang_pay_txt">支付宝</span>扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+        <script type="text/javascript">
+          $(".pay_item").click(function(){
+            $(this).addClass('checked').siblings('.pay_item').removeClass('checked');
+            var dataid=$(this).attr('data-id');
+            $(".shang_payimg img").attr("src","/img/"+dataid+"img.jpg");
+            $("#shang_pay_txt").text(dataid=="alipay"?"支付宝":"微信");
+          });
+          function dashangToggle(){
+            
+            $(".hide_box").fadeToggle();
+            $(".shang_box").fadeToggle();
+          }
+        </script>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2018/01/29/Jenkins采坑记/">Jenkins采坑记</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 weixinjie 的个人博客">weixinjie</a></p>
+        <p><span>发布时间:</span>2018年01月29日 - 21时32分</p>
+        <p><span>最后更新:</span>2018年01月29日 - 21时43分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2018/01/29/Jenkins采坑记/" title="Jenkins采坑记">http://weixinjie.github.io/2018/01/29/Jenkins采坑记/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://weixinjie.github.io/2018/01/29/Jenkins采坑记/　　作者: weixinjie" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="/2018/01/29/Android开发不得不知道的Tips集合/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          Android开发不得不知道的Tips集合
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/29/Hexo-使用教程/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Hexo 使用教程</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#为什么要做自动化构建"><span class="toc-number">1.</span> <span class="toc-text">为什么要做自动化构建</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#先说提测"><span class="toc-number">1.1.</span> <span class="toc-text">先说提测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#再说发版"><span class="toc-number">1.2.</span> <span class="toc-text">再说发版</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">1.3.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#搭建Jenkins运行环境"><span class="toc-number">2.</span> <span class="toc-text">搭建Jenkins运行环境</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#下载并安装"><span class="toc-number">2.1.</span> <span class="toc-text">下载并安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#初始化"><span class="toc-number">2.2.</span> <span class="toc-text">初始化</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#进行全局环境变量的配置"><span class="toc-number">3.</span> <span class="toc-text">进行全局环境变量的配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#系统设置"><span class="toc-number">3.1.</span> <span class="toc-text">系统设置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#系统工具配置"><span class="toc-number">3.2.</span> <span class="toc-text">系统工具配置</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#新建项目-开始自动化构建"><span class="toc-number">4.</span> <span class="toc-text">新建项目,开始自动化构建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#开始自动化构建"><span class="toc-number">5.</span> <span class="toc-text">开始自动化构建</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#写在最后"><span class="toc-number">6.</span> <span class="toc-text">写在最后</span></a></li></ol>
+</div>
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+    }
+</script>
+
+
+
+
+
+<div class="bdsharebuttonbox">
+	<a href="#" class="fx fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+	<a href="#" class="fx fa-weixin bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+	<a href="#" class="fx fa-qq bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+	<a href="#" class="fx fa-facebook-official bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+	<a href="#" class="fx fa-twitter bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+	<a href="#" class="fx fa-linkedin bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+	<a href="#" class="fx fa-files-o bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+</div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+
+
+
+    
+        <div id="gitments"></div>
+<script src="/js/gitment.browser.js"></script>
+<script>
+    var gitment = new Gitment({
+      id: window.location.pathname,
+      owner: 'luuman',
+      repo: 'luuman.github.io',
+      oauth: {
+        client_id: '',
+        client_secret: '',
+      },
+    })
+    gitment.render('gitments')
+</script>
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2018/01/29/Android开发不得不知道的Tips集合/" title="上一篇: Android开发不得不知道的Tips集合">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="/2018/01/29/Hexo-使用教程/" title="下一篇: Hexo 使用教程">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/01/29/Android开发不得不知道的Tips集合/">Android开发不得不知道的Tips集合</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/29/Jenkins采坑记/">Jenkins采坑记</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/29/Hexo-使用教程/">Hexo 使用教程</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/29/hello-world/">Hello World</a></li></ul>
+    <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+            }
+        })
+    </script>
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2018 weixinjie
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/luuman/hexo-theme-spfk" target="_blank">spfk</a> by luuman
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >海贼到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+    </div>
+    <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var backgroundnum = 24;
+            var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+  </div>
+</body>
+</html>

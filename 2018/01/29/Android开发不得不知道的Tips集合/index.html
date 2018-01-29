@@ -3,18 +3,20 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Hexo 使用教程 | Hexo</title>
+  <title>Android开发不得不知道的Tips集合 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="this is weixinjie&apos;blog">
+  <meta name="description" content="1.sp还是dp?众所周知,官方建议我们字体的单位使用sp,这样用户在“系统设置”中调整了系统字体大小的时候，我们app中的字体会随着系统字体的大小而改变。So，众猿机智的在布局文件中写下了以下代码12345&amp;lt;TextView    android:layout_width=&amp;quot;match_parent&amp;quot;    android:layout_height=&amp;quot;wra">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hexo 使用教程">
-<meta property="og:url" content="http://weixinjie.github.io/2018/01/29/Hexo-使用教程/index.html">
+<meta property="og:title" content="Android开发不得不知道的Tips集合">
+<meta property="og:url" content="http://weixinjie.github.io/2018/01/29/Android开发不得不知道的Tips集合/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="this is weixinjie&apos;blog">
-<meta property="og:updated_time" content="2018-01-29T13:29:27.234Z">
+<meta property="og:description" content="1.sp还是dp?众所周知,官方建议我们字体的单位使用sp,这样用户在“系统设置”中调整了系统字体大小的时候，我们app中的字体会随着系统字体的大小而改变。So，众猿机智的在布局文件中写下了以下代码12345&amp;lt;TextView    android:layout_width=&amp;quot;match_parent&amp;quot;    android:layout_height=&amp;quot;wra">
+<meta property="og:image" content="https://dn-mhke0kuv.qbox.me/6b257592a7c6fdc2f24f.png">
+<meta property="og:updated_time" content="2018-01-29T13:47:55.601Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo 使用教程">
-<meta name="twitter:description" content="this is weixinjie&apos;blog">
+<meta name="twitter:title" content="Android开发不得不知道的Tips集合">
+<meta name="twitter:description" content="1.sp还是dp?众所周知,官方建议我们字体的单位使用sp,这样用户在“系统设置”中调整了系统字体大小的时候，我们app中的字体会随着系统字体的大小而改变。So，众猿机智的在布局文件中写下了以下代码12345&amp;lt;TextView    android:layout_width=&amp;quot;match_parent&amp;quot;    android:layout_height=&amp;quot;wra">
+<meta name="twitter:image" content="https://dn-mhke0kuv.qbox.me/6b257592a7c6fdc2f24f.png">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -228,11 +230,11 @@
         </header>                
     </div>
 </nav>
-      <div class="body-wrap"><article id="post-Hexo-使用教程" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-Android开发不得不知道的Tips集合" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2018/01/29/Hexo-使用教程/" class="article-date">
-      <time datetime="2018-01-29T13:29:27.000Z" itemprop="datePublished">2018-01-29</time>
+      <a href="/2018/01/29/Android开发不得不知道的Tips集合/" class="article-date">
+      <time datetime="2018-01-29T13:46:00.000Z" itemprop="datePublished">2018-01-29</time>
 </a>
     </div>
   
@@ -245,7 +247,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Hexo 使用教程
+      Android开发不得不知道的Tips集合
     </h1>
   
 
@@ -262,7 +264,19 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        
+        <h1 id="1-sp还是dp"><a href="#1-sp还是dp" class="headerlink" title="1.sp还是dp?"></a>1.sp还是dp?</h1><p>众所周知,官方建议我们字体的单位使用sp,这样用户在“系统设置”中调整了系统字体大小的时候，我们app中的字体会随着系统字体的大小而改变。So，众猿机智的在布局文件中写下了以下代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;TextView</span><br><span class="line">    android:layout_width=&quot;match_parent&quot;</span><br><span class="line">    android:layout_height=&quot;wrap_content&quot;</span><br><span class="line">    android:text=&quot;this is text&quot;</span><br><span class="line">    android:textSize=&quot;15sp&quot; /&gt;</span><br></pre></td></tr></table></figure></p>
+<p>当然上述TextView不会有什么问题，因为这货height是自适应的。但是很多情境下，例如ListView或者Recyclerview的item中，高度是固定的时候，sp就会有适配问题，例如<br><a id="more"></a><br><img src="https://dn-mhke0kuv.qbox.me/6b257592a7c6fdc2f24f.png" alt=""><br><strong>解决方案：</strong><br>在Application中重写onConfigurationChanged 强制字体不随着系统改变而改变(微信也是这么干的)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">    public void onConfigurationChanged(Configuration newConfig) &#123;</span><br><span class="line">        if (newConfig.fontScale != 1)//非默认值</span><br><span class="line">            getResources();</span><br><span class="line">        super.onConfigurationChanged(newConfig);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Resources getResources() &#123;</span><br><span class="line">        Resources res = super.getResources();</span><br><span class="line">        if (res.getConfiguration().fontScale != 1) &#123;//非默认值</span><br><span class="line">            Configuration newConfig = new Configuration();</span><br><span class="line">            newConfig.setToDefaults();</span><br><span class="line">            //设置默认</span><br><span class="line">            res.updateConfiguration(newConfig, res.getDisplayMetrics());</span><br><span class="line">            if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.JELLY_BEAN_MR1) &#123;</span><br><span class="line">                createConfigurationContext(newConfig);</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                res.updateConfiguration(newConfig, res.getDisplayMetrics());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return res;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h1 id="2-使用PhotoView-Viewpager崩溃问题"><a href="#2-使用PhotoView-Viewpager崩溃问题" class="headerlink" title="2.使用PhotoView+Viewpager崩溃问题"></a>2.使用PhotoView+Viewpager崩溃问题</h1><p>这几天碰到一个诡异的问题，PhotoView+Viewpager开发图集效果的时候，在三星Galxy系列手机上手指放大的时候没问题，手指捏合的时候出现java.lang.IllegalArgumentException: pointerIndex out of range 异常然后闪退。Google了一波，说是三星系统的Bug。。。我等应用层开发汪总不见得给每个三星用户修改一下底层代码吧。</p>
+<p><strong>解决方案:</strong><br>自定义一个Viewpager，重写onInterceptTouchEvent函数，在里面捕获IllegalArgumentException就妥了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">public class PhotoViewPager extends android.support.v4.view.ViewPager &#123;</span><br><span class="line">    public PhotoViewPager(Context context) &#123;</span><br><span class="line">        super(context);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public PhotoViewPager(Context context, AttributeSet attrs) &#123;</span><br><span class="line">        super(context, attrs);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public boolean onTouchEvent(MotionEvent ev) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            return super.onTouchEvent(ev);</span><br><span class="line">        &#125; catch (IllegalArgumentException ex) &#123;</span><br><span class="line">            ex.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public boolean onInterceptTouchEvent(MotionEvent ev) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            return super.onInterceptTouchEvent(ev);</span><br><span class="line">        &#125; catch (IllegalArgumentException ex) &#123;</span><br><span class="line">            ex.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>布局文件中用PhotoViewPager代替系统原生的ViewPager就好啦。</p>
+<h1 id="3-什么？DatePickerDialog有Bug"><a href="#3-什么？DatePickerDialog有Bug" class="headerlink" title="3.什么？DatePickerDialog有Bug?"></a>3.什么？DatePickerDialog有Bug?</h1><p>项目中用到了修改用户生日的功能，打算直接用DatePickerDialog来做一个时间选择起，然后诡异的事情发生了。用户选择完时间之后onDateSelect的回调函数竟然执行了两次。原来4.1跟4.2版本有个系统Bug，这时候我们需要重新定义一个DatePickerDialog来屏蔽onStop方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">public class RepairDatePickDialog extends DatePickerDialog &#123;</span><br><span class="line">    public RepairDatePickDialog(Context context, OnDateSetListener callBack,</span><br><span class="line">                                int year, int monthOfYear, int dayOfMonth) &#123;</span><br><span class="line">        super(context, callBack, year, monthOfYear, dayOfMonth);</span><br><span class="line">        // TODO Auto-generated constructor stub</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public RepairDatePickDialog(Context context, int theme,</span><br><span class="line">                                OnDateSetListener callBack, int year, int monthOfYear,</span><br><span class="line">                                int dayOfMonth) &#123;</span><br><span class="line">        super(context, theme, callBack, year, monthOfYear, dayOfMonth);</span><br><span class="line">        // TODO Auto-generated constructor stub</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    protected void onStop() &#123;</span><br><span class="line">        // TODO Auto-generated method stub</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="4-浏览器中打开自家App的那些套路"><a href="#4-浏览器中打开自家App的那些套路" class="headerlink" title="4.浏览器中打开自家App的那些套路"></a>4.浏览器中打开自家App的那些套路</h1><p>大体的需求是用户分享出去连接，被分享的用户在浏览器中打开此连接，如果该用户设备上有我们的app则吊起app，如果没有则通知用户去下载我们的app<br>之前写过一片博客，详细的介绍了这种Deeplink的实现方式，请移步<br><a href="">https://juejin.im/entry/590fe2d8ac502e006cf9e3e4/detail</a><br>github地址<br><a href="">https://github.com/weixinjie/DeepLink</a></p>
+<h1 id="5-Android路由机制浅析"><a href="#5-Android路由机制浅析" class="headerlink" title="5.Android路由机制浅析"></a>5.Android路由机制浅析</h1><p>大厂的客户端里面都用了路由来实现页面之前的跳转，引入路由机制并不全是为了页面之间的解耦合，更多的是为了配合运营的套路。例如：大部分app里面都有Banner，这个Banner不一定全是打开Webview。有的Banner item打开的是充值页面，有的Banner item打开的是用户详情页面等。当然你可以为了Banner来写一个Map集合，每次用户点击Banner的时候Switch一下type，然后打开相应的页面，但是如果用户在浏览器中Deeplink到本地客户端呢？是不是也要实现一套Map?如果是在Webview中与js交互打开各个页面呢？是不是还要实现一套Map?</p>
+<p>推荐一个很好用的路由框架<br><a href="https://github.com/mzule/ActivityRouter" target="_blank" rel="noopener">https://github.com/mzule/ActivityRouter</a><br>后期我会献上这个库的源码解析。</p>
+
       
       
         <div class="page-reward">
@@ -317,13 +331,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2018/01/29/Hexo-使用教程/">Hexo 使用教程</a></p>
+        <p><span>本文标题:</span><a href="/2018/01/29/Android开发不得不知道的Tips集合/">Android开发不得不知道的Tips集合</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 weixinjie 的个人博客">weixinjie</a></p>
-        <p><span>发布时间:</span>2018年01月29日 - 21时29分</p>
-        <p><span>最后更新:</span>2018年01月29日 - 21时29分</p>
+        <p><span>发布时间:</span>2018年01月29日 - 21时46分</p>
+        <p><span>最后更新:</span>2018年01月29日 - 21时47分</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2018/01/29/Hexo-使用教程/" title="Hexo 使用教程">http://weixinjie.github.io/2018/01/29/Hexo-使用教程/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://weixinjie.github.io/2018/01/29/Hexo-使用教程/　　作者: weixinjie" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2018/01/29/Android开发不得不知道的Tips集合/" title="Android开发不得不知道的Tips集合">http://weixinjie.github.io/2018/01/29/Android开发不得不知道的Tips集合/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://weixinjie.github.io/2018/01/29/Android开发不得不知道的Tips集合/　　作者: weixinjie" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script src="/js/clipboard.min.js"></script>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
@@ -336,18 +350,9 @@
 
 <nav id="article-nav">
   
-    <a href="/2018/01/29/Jenkins采坑记/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption"><</strong>
-      <div class="article-nav-title">
-        
-          Jenkins采坑记
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/01/29/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Hello World</div>
+    <a href="/2018/01/29/Jenkins采坑记/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Jenkins采坑记</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -358,7 +363,7 @@
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-sp还是dp"><span class="toc-number">1.</span> <span class="toc-text">1.sp还是dp?</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-使用PhotoView-Viewpager崩溃问题"><span class="toc-number">2.</span> <span class="toc-text">2.使用PhotoView+Viewpager崩溃问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-什么？DatePickerDialog有Bug"><span class="toc-number">3.</span> <span class="toc-text">3.什么？DatePickerDialog有Bug?</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-浏览器中打开自家App的那些套路"><span class="toc-number">4.</span> <span class="toc-text">4.浏览器中打开自家App的那些套路</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-Android路由机制浅析"><span class="toc-number">5.</span> <span class="toc-text">5.Android路由机制浅析</span></a></li></ol>
 </div>
 <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
 
@@ -424,13 +429,11 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2018/01/29/Jenkins采坑记/" title="上一篇: Jenkins采坑记">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
         
-            <a href="/2018/01/29/hello-world/" title="下一篇: Hello World">
+            <a href="/2018/01/29/Jenkins采坑记/" title="下一篇: Jenkins采坑记">
                 <i class="fa fa-angle-right"></i>
             </a>
         
